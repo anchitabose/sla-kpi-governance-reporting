@@ -1,6 +1,6 @@
 # IT Service Governance & Reporting Suite
 
-An end-to-end SLA/KPI governance reporting project simulating the reporting function of a Business Reporting & Governance team — the kind of work behind Accenture's Measurement & Reporting associate role (Incident Management, Change Management, and Survey Management, rolled into unified SLA/KPI reporting).
+An end-to-end SLA/KPI governance reporting project simulating the reporting function of a Business Reporting & Governance team in a managed-services or IT operations environment (Incident Management, Change Management, and Survey Management, rolled into unified SLA/KPI reporting).
 
 ## Project Overview
 
@@ -44,7 +44,7 @@ Beyond the dashboard, the project includes the actual report *outputs* a governa
 - `SLA_KPI_Governance_Tracker.xlsx` — Excel workbook with formula-driven SLA logic, KPI summary, and report artifacts
 - `governance_theme.json` — custom Power BI theme file
 - `Monthly_Governance_Review.pptx` — executive summary deck
-- *(Power BI .pbix file to be added — built and maintained locally in Power BI Desktop)*
+- `sla_kpi_dashboard.pbix` - Power BI dashboard: data model, DAX measures, and 8 visual types *
 
 ## Why This Project
 
