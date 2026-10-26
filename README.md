@@ -21,6 +21,7 @@ Most portfolio projects show one dataset and one dashboard. This project simulat
 - **Excel**: formula-driven SLA logic (not hardcoded) — `IF`, `COUNTIFS`, `AVERAGEIFS`, `INDEX/MATCH` — with a built-in validation column that independently re-derives every ticket's Met/Breached status and cross-checks it against the source data
 - **Power BI**: full data model with relationships, DAX measures (`_Measures` table pattern), 8 distinct visual types (KPI cards, gauge, donut, treemap, line, bar, matrix with conditional formatting), 3 working slicers, and a custom brand theme
 - **Power Query**: parameterized data source (`FilePath` parameter) so the report isn't hardcoded to one machine's file path — a step toward production-ready automation
+- **Python (pandas)**: a script, `generate_weekly_report.py`, that loads the three CSVs, runs 12 data-quality checks, calculates the weekly and overall KPIs and saves them to one Excel report with a single command
 - **PowerPoint**: a 6-slide Monthly Governance Review deck summarizing findings and recommended actions for a leadership audience
 
 ## Automation & Governance Story
@@ -29,7 +30,25 @@ The reporting layer is built so that new data flows through without manual rewor
 - Formulas recalculate automatically — no pivot table needs manual refreshing
 - The Power BI model refreshes from source with one click, with all measures/visuals updating automatically
 - The file path is parameterized, so moving the source file doesn't break the report
-- In a production environment with Power BI Service access, this would run on a nightly **scheduled refresh** — the architecture is already built for it
+- Refresh was tested by adding a test row to the Excel source and clicking Refresh in Power BI Desktop; the dashboard updated without changing any visual or measure
+- Scheduled refresh on Power BI Service is **not set up** because I don't have Service access; refresh is manual in Power BI Desktop
+
+## Report Automation with Python
+
+`generate_weekly_report.py` automates the repetitive part of the weekly report. Put it in the folder with the three CSV files and run:
+
+```
+python generate_weekly_report.py
+```
+
+What it does, in order:
+1. Loads `incidents.csv`, `changes.csv` and `surveys.csv`
+2. Runs 12 data-quality checks (nulls, duplicate IDs, surveys with no matching ticket, resolved-before-raised dates, CSAT outside 1–5, and a recalculation of SLA status compared with the file) and prints a warning if any fail
+3. Picks the reporting week (the 7 days ending on the latest ticket date, or the date set in `REPORT_DATE` at the top of the script) and compares it with the 7 days before
+4. Calculates SLA compliance by priority, team, category and month, CSAT by SLA outcome, and change failure rate by risk level
+5. Saves everything to `weekly_report.xlsx`, one sheet per KPI group plus a Validation sheet
+
+The source data is synthetic and clean, so all 12 checks pass. To test that the checks work, I ran the script on a copy of the data with deliberate errors (a blank ticket ID, a duplicate row, a survey for a ticket that doesn't exist, and a CSAT score of 9) and it flagged all of them. The script produces the Excel report only; it does not refresh the Power BI dashboard, and nothing runs it on a schedule.
 
 ## Report Artifacts
 
@@ -43,8 +62,10 @@ Beyond the dashboard, the project includes the actual report *outputs* a governa
 - `incidents.csv`, `changes.csv`, `surveys.csv` — the three linked source datasets
 - `SLA_KPI_Governance_Tracker.xlsx` — Excel workbook with formula-driven SLA logic, KPI summary, and report artifacts
 - `governance_theme.json` — custom Power BI theme file
+- `generate_weekly_report.py` — Python script that validates the data and generates the weekly report
+- `weekly_report.xlsx` — sample output of the script
 - `Monthly_Governance_Review.pptx` — executive summary deck
-- `sla_kpi_dashboard.pbix` - Power BI dashboard: data model, DAX measures, and 8 visual types *
+- `SLA_KPI_Governance_Dashboard.pbix` — Power BI dashboard: data model, DAX measures, and 8 visual types
 
 ## Why This Project
 
